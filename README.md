@@ -3,17 +3,18 @@
 ## 前提条件
 - Docker for Mac (Enable Kubernetes)
 - kubectl
+- direnv
 - kompose
-- direnv [任意]
+- kubens
 
 ## オリジナルとの変更点
 - docker-composeのバージョンを3.7に変更
-- mailhogを追加
+- MailHogを追加
 - Kubernetes対応
 
 ## セットアップ
 ### docker-compose
-0. COMPOSE_PROJECT_NAMEの設定 (direnvがインストールされていれば自動で設定されている) [任意]
+0. COMPOSE_PROJECT_NAMEの設定 (direnvがインストールされていれば自動で設定されている)
 ```
 export COMPOSE_PROJECT_NAME=readsh
 ```
@@ -54,49 +55,50 @@ docker-compose stop
 ### k8s
 1. docker-compose.ymlからk8sのマニフェストファイルの雛形を作成
 ```
-kompose convert -o k8s/overlays/local
+kompose convert --volumes hostPath -o k8s/overlays/local
 ```
 
 2. ExternamNameを作成する (komposeがdocker-composeのexternal_linkの変換に対応していないため)
 ```
-# k8s/overlays/local/externalname.yaml
+cat <<. > k8s/overlays/local/externalname.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: redash
 spec:
   type: ExternalName
-  externalName: server.<namespace>.svc.cluster.local.
+  externalName: server.$(kubens -c).svc.cluster.local.
+.
 ```
 
 3. ServiceのTypeをNodePortにする
 ```
-perl -i.bak -pe 's/^spec:/spec:\n  type: NodePort/' k8s/overlays/local/*-service.yaml
-rm -f k8s/overlays/local/*.bak    # 確認して問題なければバックアップを削除
+perl -i -pe 's/^spec:/spec:\n  type: NodePort/' k8s/overlays/local/*-service.yaml
 ```
 
-4. applyする
+4. postres, redisのhostPathを編集する (docker-composeのvolumeと共用するため)
+```
+perl -i -pe 's/path: .*$/path: redash_postgres/' k8s/overlays/local/postgres-deployment.yaml
+perl -i -pe 's/path: .*$/path: redash_redis/' k8s/overlays/local/redis-deployment.yaml
+```
+
+5. applyする
 ```
 kubectl apply -f k8s/overlays/local
 ```
 
-5. 正常に起動していることを確認
+6. 正常に起動していることを確認
 ```
 kubectl get po,deploy,svc,ing
 ```
 
-6. DBの初期化
-```
-kubectl exec -it server-<id> bin/docker-entrypoint create_db
-```
-
-7. Admin Userの登録
+7. Admin Userでログインできることを確認
 
 - http://localhost:<NginxのNodePort>
 
 8. メール送信のテスト
 ```
-kubectl exec -it server-<id> bin/docker-entrypoint manage send_test_mail
+kubectl exec -it $(kubectl get po | grep server | awk '{print $1}') bin/docker-entrypoint manage send_test_mail
 ```
 
 9. メールの確認 (MailHogにメールが届いていたらOK)
