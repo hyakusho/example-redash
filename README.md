@@ -35,7 +35,7 @@ docker-compose up -d
 
 4. Admin Userの登録
 
-http://localhost
+- http://localhost
 
 5. メール送信のテスト
 ```
@@ -44,7 +44,7 @@ docker-compose run --rm server manage send_test_mail
 
 6. メールの確認 (MailHogにメールが届いていたらOK)
 
-http://localhost:8025
+- http://localhost:8025
 
 7. 終了
 ```
@@ -92,16 +92,16 @@ kubectl exec -it server-<id> bin/docker-entrypoint create_db
 
 7. Admin Userの登録
 
-http://localhost:<NginxのNodePort>
+- http://localhost:<NginxのNodePort>
 
 8. メール送信のテスト
 ```
-kubectl exec -it server-<id> bin/docker-entrypoint manage send_test_mai
+kubectl exec -it server-<id> bin/docker-entrypoint manage send_test_mail
 ```
 
 9. メールの確認 (MailHogにメールが届いていたらOK)
 
-http://localhost:<MailHogのNodePort>
+- http://localhost:<MailHogのNodePort>
 
 10. 終了
 ```
