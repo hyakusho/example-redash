@@ -25,17 +25,25 @@ cp .env.default .env
 docker-compose run --rm server create_db
 ```
 
-3. メール送信のテスト
-```
-docker-compose run --rm server manage send_test_mail
-```
-
-4. 起動
+3. 起動
 ```
 docker-compose up -d
 ```
 
-5. 終了
+4. Admin Userの登録
+
+http://localhost
+
+5. メール送信のテスト
+```
+docker-compose run --rm server manage send_test_mail
+```
+
+6. メールの確認 (MailHogにメールが届いていたらOK)
+
+http://localhost:8025
+
+7. 終了
 ```
 docker-compose stop
 ```
