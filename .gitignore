@@ -1,2 +1,4 @@
 *.swp
 .env
+k8s/overlays/local/*
+!k8s/overlays/local/.keep

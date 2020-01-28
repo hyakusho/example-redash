@@ -35,6 +35,8 @@ services:
       WORKERS_COUNT: 2
   redis:
     image: redis:5.0-alpine
+    ports:
+      - "6379:6379"
     restart: always
     volumes:
       - type: volume
@@ -42,6 +44,8 @@ services:
         target: /data
   postgres:
     image: postgres:9.6-alpine
+    ports:
+      - "5432:5432"
     env_file: .env
     volumes:
       - type: volume
