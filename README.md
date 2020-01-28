@@ -76,7 +76,7 @@ spec:
 perl -i -pe 's/^spec:/spec:\n  type: NodePort/' k8s/overlays/local/*-service.yaml
 ```
 
-4. postres, redisのhostPathを編集する (docker-composeのvolumeと共用するため)
+4. postgres, redisのhostPathを編集する (docker-composeのvolumeと共用するため)
 ```
 perl -i -pe 's/path: .*$/path: redash_postgres/' k8s/overlays/local/postgres-deployment.yaml
 perl -i -pe 's/path: .*$/path: redash_redis/' k8s/overlays/local/redis-deployment.yaml
