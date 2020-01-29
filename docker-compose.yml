@@ -67,6 +67,18 @@ services:
       - "1025:1025"
       - "8025:8025"
     restart: always
+  mysql:
+    image: kakakakakku/mysql-world-database:5.7
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      TZ: Japan
+    ports:
+      - "3306:3306"
+    volumes:
+      - type: volume
+        source: mysql
+        target: /var/lib/mysql
 volumes:
   redis:
   postgres:
+  mysql:
